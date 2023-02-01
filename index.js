@@ -2,7 +2,7 @@
 // where your node app starts
 
 // init project
-require('dotenv').config()
+require("dotenv").config();
 var express = require("express");
 var app = express();
 
@@ -14,31 +14,33 @@ app.use(cors({ optionsSuccessStatus: 200 })); // some legacy browsers choke on 2
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static("public"));
 
-app.use('/', (req, res, next) => {
-  console.log(req.method + " "+req.path)
+app.use("/", (req, res, next) => {
+  console.log(req.method + " " + req.path);
   next();
-})
+});
 
 // http://expressjs.com/en/starter/basic-routing.html
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/views/index.html");
 });
 
-
-
 // your first API endpoint...
 app.get("/api/:date", function (req, res) {
-  req.time = new Date()
-  req.params.date.length == 10 ? req.time = new Date(req.params.date) : req.time.setTime(req.params.date)
-  if (req.time.toString() == 'Invalid Date') res.json({error: 'Invalid Date'})
-  res.json({
-    unix: req.time.getTime(),
-    utc: req.time.toUTCString(),
-  });
+  const date =
+    parseInt(req.params.date) < 10000
+      ? new Date(req.params.date)
+      : new Date(parseInt(req.params.date));
+
+  date.toString() === "Invalid Date"
+    ? res.json({ error: "Invalid Date" })
+    : res.json({
+        unix: date.valueOf(),
+        utc: date.toUTCString(),
+      });
 });
 
 app.get("/api/", function (req, res) {
-  req.time = new Date()
+  req.time = new Date();
   res.json({
     unix: req.time.getTime(),
     utc: req.time.toUTCString(),
